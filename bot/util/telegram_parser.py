@@ -1,7 +1,7 @@
 import json
-from typing import List
 
-def read_telegram_file(filename: str, specific_ids: List[int] = []) -> List:
+
+def read_telegram_file(filename: str, specific_ids: list[int] = []) -> list:
     try:
         with open(filename, "r") as f:
             data = json.load(f)
@@ -16,6 +16,11 @@ def read_telegram_file(filename: str, specific_ids: List[int] = []) -> List:
 
 
 # for each message: 'type'=='message' and retrieve 'text'
-def parse_telegram_file(data: List, message_type:List[str] = ["message"]) -> List[str]:
-    raw_data = [msg["text"] for chat in data for msg in chat if msg["type"] in message_type]
+def parse_telegram_file(data: list, message_type: list[str] = ["message"]) -> list[str]:
+    raw_data = [
+        msg["text"]
+        for chat in data
+        for msg in chat
+        if (msg["type"] in message_type and isinstance(msg["text"], str) and len(msg["text"])> 0)
+    ]
     return raw_data
