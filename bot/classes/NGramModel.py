@@ -1,14 +1,34 @@
 import random
 
-class NGramModel(object):
-    def __init__(self, n):
+from bot.classes import TextPreProcessor
+
+
+class NGramModel:
+    def __init__(self, n, tokenizer: bool = False):
         self.n = n
+
+        self.tokenizer = TextPreProcessor() if tokenizer else None
 
         # dictionary that keeps list of candidate words given context
         self.context = {}
 
         # keeps track of how many times ngram has appeared in the text before
         self.ngram_counter = {}
+
+    def train(self, sentences: list[str]):
+        """ Trains the n-gram model.
+        
+        Args
+            sentences (list[str]): list of sentences
+        """
+        from tqdm import tqdm
+
+        for sentence in tqdm(sentences, desc="Pre-processing messages"):
+            if self.tokenizer is not None:
+                tokens = self.tokenizer.pre_process_doc(sentence)
+            else:
+                tokens = sentence.split()
+            self.update(tokens)
 
     def get_ngrams(self, tokens: list[str]) -> list:
         """
@@ -19,20 +39,17 @@ class NGramModel(object):
         ngrams of tuple form: ((previous wordS!), target word)
         """
 
-        tokens.append('<END>')
+        tokens.append("<END>")
         tokens = (self.n - 1) * ["<START>"] + tokens
         l = [
-            (tuple([tokens[i - p - 1] for p in reversed(range(self.n  - 1))]), tokens[i])
-            for i in range(self.n  - 1, len(tokens))
+            (tuple([tokens[i - p - 1] for p in reversed(range(self.n - 1))]), tokens[i])
+            for i in range(self.n - 1, len(tokens))
         ]
         return l
 
     def update(self, sentence: list[str]) -> None:
-        """
-        Updates Language Model
-        :param sentence: input text
-        """
         ngrams = self.get_ngrams(sentence)
+
         for ngram in ngrams:
             if ngram in self.ngram_counter:
                 self.ngram_counter[ngram] += 1.0
