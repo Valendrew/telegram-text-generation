@@ -5,3 +5,4 @@ __pycache__/
 # Misc
 *.ini
 *.json
+*.pickle

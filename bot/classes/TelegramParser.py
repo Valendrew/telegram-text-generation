@@ -1,9 +1,12 @@
 import json
 import time
 from bot import TELEGRAM_IDS, logger
+import pickle
 
 
 class TelegramParser:
+    BINARY_FILE = "telegram.pickle"
+
     @staticmethod
     def read_file(filename: str, specific_ids: list[int] = []) -> list:
         """Reads the json file as a dictionary
@@ -48,10 +51,21 @@ class TelegramParser:
                 and len(msg["text"]) > 0
             )
         ]
+        with open(TelegramParser.BINARY_FILE, "wb") as f:
+            pickle.dump(raw_data, f)
+
         return raw_data
 
-    def parse_file(filename: str) -> list:
+    def parse_file(filename: str, force_read=False) -> list:
         start_time = time.time()
+
+        if not force_read:
+            try:
+                with open(TelegramParser.BINARY_FILE, "rb") as f:
+                    logger.debug("Found binary file")
+                    return pickle.load(f)
+            except FileNotFoundError:
+                logger.debug("Binary file not found, reading JSON...")
         # Read file
         logger.debug(f"Reading telegram file: {filename}")
         raw_data = TelegramParser.read_file(filename, specific_ids=TELEGRAM_IDS)

@@ -20,4 +20,3 @@ ids = XXXXXXXX YYYYYYYY ZZZZZZZZ
 ## TODO
 
 - [MARISA TRIE](https://marisa-trie.readthedocs.io/en/latest/)
-- [Pickle support](https://docs.python.org/3/library/pickle.html)
