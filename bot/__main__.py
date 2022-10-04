@@ -1,5 +1,17 @@
-from bot.classes import NGramModel, TelegramParser, NGramModelTrie
-from bot import logger
+from pyrogram import Client, filters
+from pyrogram.types import Message
+
+from bot.classes import TelegramParser, NGramModelTrie
+from bot import API_HASH, API_ID, BOT_NAME, BOT_TOKEN, logger
+
+model = NGramModelTrie(n=3, tokenizer=True)
+app = Client(BOT_NAME, api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
+
+@app.on_message(filters.command('generate'))
+async def send_generated_text(client: Client, message: Message):
+    logger.debug(f"Sent message to {message.from_user.id}")
+    text = model.generate_text(10)
+    await client.send_message(chat_id=message.chat.id, text=text)
 
 if __name__ == "__main__":
     PARSER = "telegram"
@@ -9,13 +21,7 @@ if __name__ == "__main__":
         raw_data = TelegramParser.parse_file(DATA_FILE)
 
     # small_raw_data = raw_data[0:50]
-    model = NGramModelTrie(n=3, tokenizer=True)
     model.train(raw_data)
 
-    while True:
-        input("\n--Enter to generate--")
-        try:
-            print(model.generate_text(10))
-        except Exception as e:
-            logger.error(f"ERROR: {e}")
-            continue
+    # print()
+    app.run()

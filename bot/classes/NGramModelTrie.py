@@ -1,9 +1,7 @@
 from collections import Counter
 import random
-from abc import ABC, abstractmethod
-import sys
-from bot.classes import TextPreProcessor
-from bot.classes.TokenNode import TokenNode
+from bot.classes import TextPreProcessor, TokenNode
+from bot import logger
 
 
 class NGramModelTrie:
@@ -136,7 +134,8 @@ class NGramModelTrie:
         r = random.random()
         count_of_context = self.get_count(context)
         if count_of_context == 0:
-            raise Exception("Context doesn't exist")
+            logger.error(f"Context doesn't exist on {context}")
+            return "<END>"
 
         map_to_probs = dict(
             [
@@ -160,14 +159,20 @@ class NGramModelTrie:
         context_queue = (n - 1) * ["<START>"]
         result = []
         alpha_threshold = 0.7
-        while len(result) < token_count:
-            token = self.random_token(tuple(context_queue))
-            if token == "<END>":
-                if len(result) >= token_count * alpha_threshold:
-                    break
-                else:
-                    token = "."
 
+        for _ in range(token_count):
+            token_admissable = False
+            try_context = context_queue
+
+            while not token_admissable:
+                token = self.random_token(tuple(try_context))
+                if token == "<END>" and len(result) < token_count * alpha_threshold:
+                    try_context = try_context[1:]
+                else:
+                    token_admissable = True
+
+            if token == "<END>":
+                break
             result.append(token)
             if n > 1:
                 context_queue.pop(0)

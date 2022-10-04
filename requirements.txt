@@ -4,5 +4,9 @@ mypy-extensions==0.4.3
 numpy==1.23.3
 pathspec==0.10.1
 platformdirs==2.5.2
+pyaes==1.6.1
+Pyrogram==2.0.57
+PySocks==1.7.1
+TgCrypto==1.2.3
 tomli==2.0.1
 tqdm==4.64.1

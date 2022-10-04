@@ -6,3 +6,5 @@ __pycache__/
 *.ini
 *.json
 *.pickle
+*.session
+*.session-journal
