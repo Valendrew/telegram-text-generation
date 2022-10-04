@@ -127,7 +127,7 @@ class NGramModelTrie:
         result = token.count / float(count_of_context)
         return (token.word, result)
 
-    def random_token(self, context, lambda_coeff: int = 1):
+    def random_token(self, context):
         """
         Given a context we "semi-randomly" select the next word to append in a sequence
         :param context:
@@ -159,10 +159,14 @@ class NGramModelTrie:
         n = self.n
         context_queue = (n - 1) * ["<START>"]
         result = []
-        for _ in range(token_count):
+        alpha_threshold = 0.7
+        while len(result) < token_count:
             token = self.random_token(tuple(context_queue))
             if token == "<END>":
-                break
+                if len(result) >= token_count * alpha_threshold:
+                    break
+                else:
+                    token = "."
 
             result.append(token)
             if n > 1:
