@@ -28,7 +28,13 @@ class TextPreProcessor:
 
         data = self.regexes["spaces"].sub(" ", data)
 
-        return data.strip().split(" ")
+        data = data.strip()
+
+        data_list = data.split(" ")
+        # TODO remove
+        # result = data.strip().split(" ")
+
+        return data.split(" ") if data != "" else list()
 
     def pre_process_docs(self, raw_data: list[str]) -> Iterator[list[str]]:
         from tqdm import tqdm
