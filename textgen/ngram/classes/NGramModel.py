@@ -155,7 +155,7 @@ class NGramModel:
     def fix_punctuations(self, sentence):
         return self.punctuation_regex.sub(r"\1", sentence)
 
-    def generate_text(self, token_count: int):
+    def generate_text(self, token_count: int = 15):
         """
         :param token_count: number of words to be produced
         :return: generated text
