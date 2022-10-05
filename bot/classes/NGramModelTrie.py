@@ -1,10 +1,16 @@
 from collections import Counter
 import random
-from bot.classes import TextPreProcessor, TokenNode
+import re
+
 from bot import logger
+from bot.classes import TextPreProcessor, TokenNode
+from bot.regexes import EXPRESSIONS
 
 
 class NGramModelTrie:
+
+    punctuation_regex = re.compile(r" " + EXPRESSIONS["ADD_SYMBOLS"])
+
     def __init__(self, n, tokenizer: bool = False):
         if n <= 0:
             raise Exception("N not valid")
@@ -80,14 +86,6 @@ class NGramModelTrie:
             node = node.get_child(word)
         node.count += count
 
-    def get_vocab(self):
-        """Return the vocabulary."""
-        return self.root.children
-
-    def get_vocab_size(self):
-        """Return the size of vocabulary."""
-        return self.root.num_children()
-
     def get_count(self, gram):
         """Given a n-gram as list of words, return its absolute count."""
         node = self.root
@@ -150,6 +148,9 @@ class NGramModelTrie:
             if summ > r:
                 return token
 
+    def fix_punctuations(self, sentence):
+        return self.punctuation_regex.sub(r"\1", sentence)
+
     def generate_text(self, token_count: int):
         """
         :param token_count: number of words to be produced
@@ -180,4 +181,4 @@ class NGramModelTrie:
                     context_queue = (n - 1) * ["<START>"]
                 else:
                     context_queue.append(token)
-        return " ".join(result)
+        return self.fix_punctuations(" ".join(result))
