@@ -1,13 +1,15 @@
 from collections import Counter
+from math import ceil
 import random
 import re
 
-from bot import logger
-from bot.classes import TextPreProcessor, TokenNode
-from bot.regexes import EXPRESSIONS
+from .. import logger
+from .TextPreProcessor import TextPreProcessor
+from .TokenNode import TokenNode
+from ..regexes import EXPRESSIONS
 
 
-class NGramModelTrie:
+class NGramModel:
 
     punctuation_regex = re.compile(r" " + EXPRESSIONS["ADD_SYMBOLS"])
 
@@ -29,6 +31,8 @@ class NGramModelTrie:
             sentences (list[str]): list of sentences
         """
         from tqdm import tqdm
+
+        logger.info("Traninig the model")
 
         ngrams = [
             ngram
@@ -159,7 +163,7 @@ class NGramModelTrie:
         n = self.n
         context_queue = (n - 1) * ["<START>"]
         result = []
-        alpha_threshold = 0.7
+        alpha_threshold = 0.5
 
         for _ in range(token_count):
             token_admissable = False
@@ -167,7 +171,9 @@ class NGramModelTrie:
 
             while not token_admissable:
                 token = self.random_token(tuple(try_context))
-                if token == "<END>" and len(result) < token_count * alpha_threshold:
+                if token == "<END>" and len(result) < ceil(
+                    token_count * alpha_threshold
+                ):
                     try_context = try_context[1:]
                 else:
                     token_admissable = True

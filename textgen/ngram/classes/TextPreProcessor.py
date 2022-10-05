@@ -1,6 +1,7 @@
 from collections.abc import Iterator
-from bot.regexes import EXPRESSIONS
 import re
+
+from ..regexes import EXPRESSIONS
 
 
 class TextPreProcessor:

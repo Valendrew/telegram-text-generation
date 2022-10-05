@@ -5,7 +5,7 @@
 Place the **json** with chats in the main folder and run:
 
 ```bash
-python -m bot
+python -m textgen
 ```
 
 ## Configuration file
@@ -13,10 +13,11 @@ python -m bot
 - Create a **config.ini** file
 - Retrieve your api id and hash from <https://my.telegram.org/>
 - Add your bot name and bot token, which you can retrieve by writing to @BotFather on Telegram
+- TELEGRAM_CHAT.ids is a string of space separated chat ids
 
 ```ini
 [TELEGRAM_CHAT]
-ids = XXXXXXXX YYYYYYYY ZZZZZZZZ
+ids = 
 
 [BOT]
 name = 

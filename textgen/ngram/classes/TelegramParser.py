@@ -1,7 +1,8 @@
 import json
 import time
-from bot import TELEGRAM_IDS, logger
 import pickle
+
+from .. import logger
 
 
 class TelegramParser:
@@ -56,24 +57,26 @@ class TelegramParser:
 
         return raw_data
 
-    def parse_file(filename: str, force_read=False) -> list:
+    def parse_file(
+        filename: str, specific_ids: list[int] = [], force_read=False
+    ) -> list:
         start_time = time.time()
 
         if not force_read:
             try:
                 with open(TelegramParser.BINARY_FILE, "rb") as f:
-                    logger.debug("Found binary file")
+                    logger.info("Found binary file")
                     return pickle.load(f)
             except FileNotFoundError:
                 logger.debug("Binary file not found, reading JSON...")
         # Read file
-        logger.debug(f"Reading telegram file: {filename}")
-        raw_data = TelegramParser.read_file(filename, specific_ids=TELEGRAM_IDS)
-        logger.debug(f"Found {len(raw_data)} chats")
+        logger.info(f"Reading telegram file: {filename}")
+        raw_data = TelegramParser.read_file(filename, specific_ids=specific_ids)
+        logger.info(f"Found {len(raw_data)} chats")
         # Filter only messages
         raw_data = TelegramParser.filter_file(raw_data)
-        logger.debug(f"Found {len(raw_data)} raw messages")
+        logger.info(f"Found {len(raw_data)} raw messages")
         # log file
-        logger.debug(f"Time for processing: {time.time() - start_time : .2f} seconds")
+        logger.info(f"Time for processing: {time.time() - start_time : .2f} seconds")
 
         return raw_data
