@@ -4,6 +4,8 @@ import random
 import re
 
 from .. import logger
+
+from .BERTPreProcessor import BERTPreProcessor
 from .TextPreProcessor import TextPreProcessor
 from .TokenNode import TokenNode
 from ..regexes import EXPRESSIONS
@@ -18,11 +20,11 @@ class NGramModel:
             raise Exception("N not valid")
 
         self.n = n
-
-        self.tokenizer = TextPreProcessor() if tokenizer else None
-
+        # self.tokenizer = TextPreProcessor() if tokenizer else None
+        self.tokenizer = BERTPreProcessor() if tokenizer else None
         # dictionary that keeps list of candidate words given context
         self.root = TokenNode("")
+        self.pruning = 2
 
     def train(self, sentences: list[str]):
         """Trains the n-gram model.
@@ -43,6 +45,8 @@ class NGramModel:
         counter = Counter(ngrams)
         for gram in tqdm(counter, "Creating the ngram model"):
             count = counter[gram]
+            if count <= self.pruning:
+                continue
             self.add_gram(gram, count)
 
             if gram[-1] == "<e>":
@@ -60,7 +64,7 @@ class NGramModel:
             list[tuple[str]]: _description_
         """
         if self.tokenizer is not None:
-            tokens = self.tokenizer.pre_process_doc(sentence)
+            tokens = self.tokenizer.preprocess(sentence)
         else:
             tokens = sentence.split()
 

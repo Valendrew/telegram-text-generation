@@ -1,1 +1,1 @@
-from .expressions import EXPRESSIONS
+from .expressions import EXPRESSIONS, BERT_EXPRESSIONS
